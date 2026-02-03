@@ -1,1 +1,52 @@
+/* General Setup */
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0d0d0d; /* Dark theme */
+    overflow: hidden;
+}
 
+#particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.container {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.05); /* Glass effect */
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    text-align: center;
+    width: 350px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h2, p { color: #00f2fe; text-shadow: 0 0 10px #00f2fe; }
+
+input {
+    width: 90%;
+    padding: 12px;
+    margin: 20px 0;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid #444;
+    color: white;
+    border-radius: 5px;
+    outline: none;
+}
+#canvas {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-image: radial-gradient(#421551 0%, #36323a 40%, #2d2727 100%);
+}

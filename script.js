@@ -1,27 +1,173 @@
+
+const canvas = document.querySelector("#canvas");
+const ctx = canvas.getContext("2d");
+
+let w, h, particles;
+let particleDistance = 40;
+let mouse = {
+	x: undefined,
+	y: undefined,
+	radius: 100
+}
+
+function init() {
+	resizeReset();
+	animationLoop();
+}
+
+function resizeReset() {
+	w = canvas.width = window.innerWidth;
+	h = canvas.height = window.innerHeight;
+
+	particles = [];
+	for (let y = (((h - particleDistance) % particleDistance) + particleDistance) / 2; y < h; y += particleDistance) {
+		for (let x = (((w - particleDistance) % particleDistance) + particleDistance) / 2; x < w; x += particleDistance) {
+			particles.push(new Particle(x, y));
+		}
+	}
+}
+
+function animationLoop() {
+	ctx.clearRect(0, 0, w, h);
+	drawScene();
+	requestAnimationFrame(animationLoop);
+}
+
+function drawScene() {
+	for (let i = 0; i < particles.length; i++) {
+		particles[i].update();
+		particles[i].draw();
+	}
+	drawLine();
+}
+
+function drawLine() {
+	for (let a = 0; a < particles.length; a++) {
+		for (let b = a; b < particles.length; b++) {
+			let dx = particles[a].x - particles[b].x;
+			let dy = particles[a].y - particles[b].y;
+			let distance = Math.sqrt(dx * dx + dy * dy);
+
+			if (distance < particleDistance * 1.5) {
+				opacity = 1 - (distance / (particleDistance * 1.5));
+				ctx.strokeStyle = "rgba(255,255,255," + opacity + ")";
+				ctx.lineWidth = 2;
+				ctx.beginPath();
+				ctx.moveTo(particles[a].x, particles[a].y);
+				ctx.lineTo(particles[b].x, particles[b].y);
+				ctx.stroke();
+			}
+		}
+	}
+}
+
+function mousemove(e) {
+	mouse.x = e.x;
+	mouse.y = e.y;
+}
+
+function mouseout() {
+	mouse.x = undefined;
+	mouse.y = undefined;
+}
+
+class Particle {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
+		this.size = 4;
+		this.baseX = this.x;
+		this.baseY = this.y;
+		this.speed = (Math.random() * 25) + 5;
+	}
+	draw() {
+		ctx.fillStyle = "rgba(255,255,255,1)";
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+		ctx.closePath();
+		ctx.fill();
+	}
+	update() {
+		let dx = mouse.x - this.x;
+		let dy = mouse.y - this.y;
+		let distance = Math.sqrt(dx * dx + dy * dy);
+		let maxDistance = mouse.radius;
+		let force = (maxDistance - distance) / maxDistance; // 0 ~ 1
+		let forceDirectionX = dx / distance;
+		let forceDirectionY = dy / distance;
+		let directionX = forceDirectionX * force * this.speed;
+		let directionY = forceDirectionY * force * this.speed;
+
+		if (distance < mouse.radius) {
+			this.x -= directionX;
+			this.y -= directionY;
+		} else {
+			if (this.x !== this.baseX) {
+				let dx = this.x - this.baseX;
+				this.x -= dx / 10;
+			}
+			if (this.y !== this.baseY) {
+				let dy = this.y - this.baseY;
+				this.y -= dy / 10;
+			}
+		}
+	}
+}
+
+init();
+window.addEventListener("resize", resizeReset);
+window.addEventListener("mousemove", mousemove);
+window.addEventListener("mouseout", mouseout);/* Particles Background Configuration */
+particlesJS("particles-js", {
+  "particles": {
+    "number": { "value": 80 },
+    "color": { "value": "#00f2fe" },
+    "shape": { "type": "circle" },
+    "opacity": { "value": 0.5 },
+    "size": { "value": 3 },
+    "line_linked": {
+      "enable": true,
+      "distance": 150,
+      "color": "#00f2fe",
+      "opacity": 0.4,
+      "width": 1
+    },
+    "move": { "enable": true, "speed": 3 }
+  },
+  "interactivity": {
+    "events": {
+      "onhover": { "enable": true, "mode": "grab" }, /* Mouse tracking line effect */
+      "onclick": { "enable": true, "mode": "push" }
+    }
+  }
+  
+});
 //Selecting DOM elemnts
 const passwordInput = document.getElementById('password');
-const strengMessage = document.getElementById('password');
+const strengMessage = document.getElementById('message');
 
 //Adding event listener to monitor input changes
 passwordInput.addEventListener('input',() => {
     const val = passwordInput.value;
     let strength = 0;
 
- // Logik for password  strength evalution
- if (val.length > 8) strength++; //Check for minimum length
- if (/[A-Z]/.test(val)) strength++; //Check for uppercase letters
- if (/[0-9]/.test(val)) strength++; //Check for numerical digits
- if (/[^A-Za-z0-9]/.test(val)) strength++; //Check for character(@,#,$,etc.)
+    // Logik for password  strength evalution
+    if (val.length > 8) strength++; //Check for minimum length
+    if (/[A-Z]/.test(val)) strength++; //Check for uppercase letters
+    if (/[0-9]/.test(val)) strength++; //Check for numerical digits
+    if (/[^A-Za-z0-9]/.test(val)) strength++; //Check for character(@,#,$,etc.)
 
     // Visual feedback based on strength score
-    if (strength === 0) {
-        strengthMessage.textContent = "Very Weak!";
-        strengthMessage.style.color = "red";
-    } else if (strength < 3) {
-        strengthMessage.textContent = "Moderate";
-        strengthMessage.style.color = "orange";
-    } else {
-        strengthMessage.textContent = "Strong and Secure";
-        strengthMessage.style.color = "green";
+    if (strength <= 1) {
+        strengMessage.textContent = "Weak!";
+        strengMessage.style.color = "#ff4b2b";
+    } 
+    else if (strength < 4) {
+        strengMessage.textContent = "Moderate";
+        strengMessage.style.color = "#ffa100";
+    } 
+    else {
+        strengMessage.textContent = "Cyber-Security Approved ✅";
+        strengMessage.style.color = "#00f2fe";
     }
 });
