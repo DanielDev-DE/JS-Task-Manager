@@ -25,4 +25,3 @@ passwordInput.addEventListener('input',() => {
         strengthMessage.style.color = "green";
     }
 });
-
